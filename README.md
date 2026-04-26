@@ -1,2 +1,2 @@
-# analyze-data
-对开源数据集进行数据分析以及数据挖掘
+# analyze_california_housing
+对sklearn中的开源数据集——加州房价数据集进行数据分析以及数据挖掘
