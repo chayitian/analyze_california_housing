@@ -1,13 +1,24 @@
 # <center>加州房价数据集</center>
 
 # <center>摘要</center>
-&emsp;基于加州房价数据集，进行数据分析——全变量 OLS、描述性统计、分布可视化、箱线图、散点图、相关性分析、VIF、经纬度房价散点图。
+&emsp;基于scikit-learn里的加州房价数据集，进行数据分析——全变量 OLS、描述性统计、分布可视化、箱线图、散点图、相关性分析、VIF、经纬度房价散点图。
 
-# 1 数据来源与背景
-&emsp;加州房价数据集源自 1990 年美国人口普查（U.S. Census） 数据，最初由 Pace, R. Kelley 和 Ronald Barry 在 1997 年的论文 "Sparse Spatial Autoregressions"（发表于 Statistics and Probability Letters）中构建并发布 。数据最初托管在卡内基梅隆大学的 StatLib 仓库中 。
+# <center>1 数据来源与背景</center>
+&emsp;加州房价数据集源自 1990 年美国人口普查（U.S. Census） 数据，最初由 Pace, R. Kelley 和 Ronald Barry 在 1997 年的论文 "Sparse Spatial Autoregressions"（发表于 Statistics and Probability Letters）中构建并发布 。数据最初托管在卡内基梅隆大学的 StatLib 仓库中 。<br>
 &emsp;该数据集是机器学习领域最常用的回归基准数据集之一，也是 sklearn 中 Boston 房价数据集被弃用后 的官方推荐替代方案 。
 
-# 2 数据集基本概况
+| 对比项 | 原始数据集（Kaggle/UCI版本） | sklearn版本 |
+|:--------:|:------------------------------:|:-------------:|
+| 特征总数 | 10个特征 + 1个目标变量 | 8个特征 + 1个目标变量 |
+| 特征列表 | 1. `longitude` - 经度<br>2. `latitude` - 纬度<br>3. `housing_median_age` - 房屋年龄中位数<br>4. `total_rooms` - 总房间数<br>5. `total_bedrooms` - 总卧室数<br>6. `population` - 人口数<br>7. `households` - 家庭数<br>8. `median_income` - 收入中位数<br>9. `ocean_proximity` - 离海远近（类别型）<br>10. `median_house_value` - 房价中位数（目标） | 1. `MedInc` - 收入中位数（已归一化）<br>2. `HouseAge` - 房屋年龄<br>3. `AveRooms` - 平均房间数<br>4. `AveBedrms` - 平均卧室数<br>5. `Population` - 人口<br>6. `AveOccup` - 平均居住人数<br>7. `Latitude` - 纬度<br>8. `Longitude` - 经度<br>9. `target` - 房价中位数（目标，单位：10万美元） |
+| 数据形式 | 原始数值，未标准化 | 预处理和标准化后的数值 |
+| 类别特征 | 包含`ocean_proximity`（类别型），需one-hot编码 | 完全移除`ocean_proximity`，所有特征均为数值型 |
+| 缺失值 | `total_bedrooms`存在少量缺失值 | 无缺失值，数据已清洗 |
+| 特征计算方式 | - `total_rooms` - 直接使用总房间数<br>- `total_bedrooms` - 直接使用总卧室数<br>- `population` - 直接使用总人口数<br>- `households` - 直接使用家庭总数 | - `AveRooms` = `total_rooms / households`<br>- `AveBedrms` = `total_bedrooms / households`<br>- `AveOccup` = `population / households`<br>- `MedInc` = `median_income`（已缩放）<br>- `HouseAge` = `housing_median_age`<br>- `Latitude` = `latitude`<br>- `Longitude` = `longitude` |
+| 目标变量单位 | 美元 | 10万美元（已缩放） |
+| 使用便利性 | 需要特征工程和数据清洗 | 开箱即用，适合快速实验 |
+
+# <center>2 数据集基本概况</center>
 
 | 属性        | 说明                                       |
 | :--------: | :---------------------------------------: |
@@ -41,7 +52,7 @@
 | **单位**          | **十万美元**（即目标值 4.526 表示 \$452,600） |
 | **截断上限**        | 所有房价超过 \$500,000 的样本均被截断为 5.0     |
 
-# 3 探索性数据分析
+# <center>3 探索性数据分析</center>
 
 ## 3.1 建立多元线性回归模型
 &emsp;未进行任何EDA探索性数据分析直接把自变量全部扔到多元线性回归模型中进行拟合。
@@ -214,3 +225,17 @@
 ## 3.8 经纬度散点图
 ![alt text](/results/images/经纬度散点图.png)
 &emsp;加州房价的地理分布状况靠近一侧即低纬度高经度一侧价格较高，呈带状分布，离此处越远价格越低。
+
+# <center>4 机器学习建模</center>
+
+&emsp;忽略探索性数据分析的结论，使用所有数据在 Python 的 scikit-learn 包基础上进行机器学习建模——线性回归模型。首先划分数据集，划分比例为7:3，然后标准化并防止数据泄露，再然后训练模型并预测测试集的结果，最后从训练集和测试集两方面使用多个指标评估模型效果。<br>
+&emsp;参数估计结果如下：
+| 变量 | MedInc | HouseAge | AveRooms | AveBedrms | Population | AveOccup | Latitude | Longitude | intercept |
+|:------:|:--------:|:----------:|:----------:|:-----------:|:------------:|:----------:|:----------:|:-----------:|:-----------:|
+| 系数 | 0.849186 | 0.121970 | -0.299346 | 0.348218 | -0.001004 | -0.041681 | -0.893844 | -0.868475 | 2.069158 |
+
+&emsp;数据集评估结果如下：
+| 数据集 | R^2 | Adjusted_R^2 | EVS | MSE | RMSE | MAE | MAPE | MedAE | ME |
+|:--------:|:-----:|:--------------:|:-----:|:-----:|:------:|:-----:|:------:|:-------:|:----:|
+| 训练集 | 0.609367 | 0.609150 | 0.609367 | 0.523329 | 0.723415 | 0.530922 | 0.316006 | 0.412956 | 5.905949 | 
+| 测试集 | 0.595781 | 0.595258 | 0.595782 | 0.530553 | 0.728391 | 0.527231 | 0.317473 | 0.409091 | 9.878569 | 
