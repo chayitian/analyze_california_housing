@@ -34,7 +34,7 @@
 &emsp;综上，HouseAge、Latitude、Longitude不处理（Latitude、Longitude地理位置信息存在交互效应暂不处理）；MedInc、AveRooms、AveBedrms、Population、AveOccup对数变换<br>
 
 ![alt text](../results/images/变换后的直方图与分布图.png)
-&emsp;根据变化后的直方图与分布图结果可以看到 HouseAge、Latitude、Longitude 这些没有变换的自变量分布图比较异常，其他的分布都趋向于正态分布。考虑到 HouseAge、Latitude、Longitude 本身的特殊性不进行进一步处理，后面只根据 Latitude、Longitude 构建衍生变量。另外，考虑到量纲不同，有些差异过大（尤其是 Latitude 和 Longitude 与其他变量差异过大），因此进行标准化
+&emsp;根据变化后的直方图与分布图结果可以看到 HouseAge、Latitude、Longitude 这些没有变换的自变量分布图比较异常，其他的分布都趋向于正态分布。考虑到 HouseAge、Latitude、Longitude 本身的特殊性不进行进一步处理，后面只根据 Latitude、Longitude 构建衍生变量。另外，考虑到量纲不同，有些差异过大（尤其是 Latitude 和 Longitude 与其他变量差异过大），因此进行标准化。
 
 # <center>2 线性回归模型</center>
 ## 2.1 线性回归模型_v0
